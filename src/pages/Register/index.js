@@ -2,9 +2,10 @@
 import React, {useState} from 'react';
 import {StyleSheet, View, ScrollView} from 'react-native';
 import {Header, Input, Button, Loading} from '../../component';
-import {colors, useForm, storeData, getData, removeValue} from '../../utils';
+import {colors, useForm, storeData, showError} from '../../utils';
 import {Firebase} from '../../config';
-import {showMessage, hideMessage} from 'react-native-flash-message';
+import {showMessage} from 'react-native-flash-message';
+import {useDispatch} from 'react-redux';
 
 const Register = ({navigation}) => {
   const [form, setForm] = useForm({
@@ -13,44 +14,32 @@ const Register = ({navigation}) => {
     email: '',
     password: '',
   });
-
-  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
 
   const onContinue = () => {
-    setLoading(true);
+    dispatch({type: 'SET_LOADING', value: true});
     Firebase.auth()
       .createUserWithEmailAndPassword(form.email, form.password)
       .then(success => {
-        setLoading(false);
+        dispatch({type: 'SET_LOADING', value: false});
         setForm('reset');
         const data = {
           fullname: form.fullname,
           pekerjaan: form.pekerjaan,
           email: form.email,
+          uid: success.user.uid,
         };
         Firebase.database()
           .ref(`users/${success.user.uid}`)
           .set(data);
 
         storeData('user', data);
-        console.log(JSON.stringify(`sukses : ${success}`));
-        navigation.navigate('UploadPhoto', {
-          nama: data.fullname,
-          pekerjaan: data.pekerjaan,
-        });
+        dispatch({type: 'SAVE_USER', value: data});
+        navigation.navigate('UploadPhoto', data);
       })
       .catch(error => {
-        // Handle Errors here.
-        let errorCode = error.code;
-        let errorMessage = error.message;
-        setLoading(false);
-        showMessage({
-          message: errorMessage,
-          type: 'default',
-          backgroundColor: colors.alert,
-          color: colors.white,
-        });
-        console.log(JSON.stringify(`error : ${errorMessage}`));
+        dispatch({type: 'SET_LOADING', value: false});
+        showError(error.message);
       });
   };
   return (
@@ -88,7 +77,6 @@ const Register = ({navigation}) => {
           </ScrollView>
         </View>
       </View>
-      {loading && <Loading />}
     </>
   );
 };

@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginRight: 10,
     width: 100,
-    height: 130,
+    height: 150,
   },
   illustration: {
     marginBottom: 28,

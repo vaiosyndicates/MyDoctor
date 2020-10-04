@@ -1,47 +1,58 @@
-import React from 'react';
+import React, {useEffect, useCallback} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {Header, List} from '../../component';
-import {Doctor3, Doctor2, Doctor1} from '../../assets';
-import {colors} from '../../utils';
+import {ILNullPhoto} from '../../assets';
+import {colors, showError, parseArray} from '../../utils';
+import {useDispatch, useSelector} from 'react-redux';
+import {Firebase} from '../../config';
 
 const ChooseDoctor = ({navigation, route}) => {
-  const {category} = route.params;
+  const itemCategory = route.params;
+  const dispatch = useDispatch();
+  const categoryEachDoctor = useSelector(state => state.categoryEachDoctors);
+
+  useEffect(() => {
+    getDoctorCategories();
+  }, [getDoctorCategories]);
+
+  const getDoctorCategories = useCallback(() => {
+    Firebase.database()
+      .ref('doctors/')
+      .orderByChild('category')
+      .equalTo(itemCategory.category)
+      .once('value')
+      .then(res => {
+        if (res.val()) {
+          const data = parseArray(res.val());
+          dispatch({type: 'GET_CATEGORY_EACH_DOCTOR', value: data});
+        } else {
+          dispatch({type: 'GET_CATEGORY_EACH_DOCTOR', value: {}});
+        }
+      })
+      .catch(err => {
+        showError(err.message);
+      });
+  }, [dispatch, itemCategory.category]);
+
   return (
     <View style={styles.page}>
       <Header
         type="dark"
-        headerTitle={`Pilih Dokter ${category}`}
+        headerTitle={`Pilih Dokter ${itemCategory.category}`}
         onPress={() => navigation.goBack()}
       />
-      <List
-        type="hasNext"
-        pic={Doctor1}
-        name="John Doe"
-        excerpt="Wanita"
-        onPress={() => navigation.navigate('Chat')}
-      />
-      <List
-        type="hasNext"
-        pic={Doctor2}
-        name="Jane Doe"
-        excerpt="Wanita"
-        onPress={() => navigation.navigate('Chat')}
-      />
-      <List
-        type="hasNext"
-        pic={Doctor1}
-        name="John Dawson"
-        excerpt="Pria"
-        onPress={() => navigation.navigate('Chat')}
-      />
-      <List
-        type="hasNext"
-        pic={Doctor2}
-        name="Jessica Lie"
-        excerpt="Wanita"
-        onPress={() => navigation.navigate('Chat')}
-      />
-      <List type="hasNext" pic={Doctor3} name="John Lebron" excerpt="Pria" />
+      {categoryEachDoctor.length > 0 &&
+        categoryEachDoctor.map((cur, i) => {
+          return (
+            <List
+              type="hasNext"
+              pic={cur.data.photo ? {uri: cur.data.photo} : ILNullPhoto}
+              name={cur.data.fullName}
+              excerpt={cur.data.gender}
+              onPress={() => navigation.navigate('DoctorProfile', cur)}
+            />
+          );
+        })}
     </View>
   );
 };

@@ -1,14 +1,34 @@
 import React, {useEffect} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {ILLogo} from '../../assets';
-import {colors, fonts} from '../../utils';
+import {colors, fonts, storeData} from '../../utils';
+import {Firebase} from '../../config';
+import {useDispatch} from 'react-redux';
 
 const Splash = ({navigation}) => {
+  const dispatch = useDispatch();
   useEffect(() => {
-    setTimeout(() => {
-      navigation.replace('GetStarted');
-    }, 3000);
-  }, [navigation]);
+    const unsubscribe = Firebase.auth().onAuthStateChanged(user => {
+      setTimeout(() => {
+        if (user) {
+          Firebase.database()
+            .ref(`users/${user.uid}`)
+            .once('value')
+            .then(response => {
+              storeData('user', response.val());
+              dispatch({type: 'SAVE_USER', value: response.val()});
+              navigation.replace('MainApp');
+            })
+            .catch(err => {
+              console.log(err);
+            });
+        } else {
+          navigation.replace('GetStarted');
+        }
+      }, 3000);
+    });
+    return () => unsubscribe();
+  }, [dispatch, navigation]);
 
   return (
     <View style={styles.page}>

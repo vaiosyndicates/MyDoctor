@@ -17,6 +17,7 @@ import {
   DoctorProfile,
 } from '../pages';
 import {BottomNavigator} from '../component';
+import {useSelector} from 'react-redux';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -32,6 +33,8 @@ const MainApp = () => {
 };
 
 const Router = () => {
+  const stateGlobal = useSelector(state => state.isLogin);
+  console.log(stateGlobal);
   return (
     <Stack.Navigator initialRouteName="Splash">
       <Stack.Screen
@@ -41,76 +44,83 @@ const Router = () => {
           headerShown: false,
         }}
       />
-      <Stack.Screen
-        name="GetStarted"
-        component={GetStarted}
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
-        name="Register"
-        component={Register}
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
-        name="Login"
-        component={Login}
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
-        name="UploadPhoto"
-        component={UploadPhoto}
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
-        name="MainApp"
-        component={MainApp}
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
-        name="ChooseDoctor"
-        component={ChooseDoctor}
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
-        name="Chat"
-        component={Chat}
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
-        name="UserProfile"
-        component={UserProfile}
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
-        name="EditProfile"
-        component={EditProfile}
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
-        name="DoctorProfile"
-        component={DoctorProfile}
-        options={{
-          headerShown: false,
-        }}
-      />
+      {stateGlobal === false ? (
+        <>
+          <Stack.Screen
+            name="GetStarted"
+            component={GetStarted}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="Register"
+            component={Register}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="Login"
+            component={Login}
+            options={{
+              headerShown: false,
+            }}
+          />
+        </>
+      ) : (
+        <>
+          <Stack.Screen
+            name="UploadPhoto"
+            component={UploadPhoto}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="MainApp"
+            component={MainApp}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="ChooseDoctor"
+            component={ChooseDoctor}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="Chat"
+            component={Chat}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="UserProfile"
+            component={UserProfile}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="EditProfile"
+            component={EditProfile}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="DoctorProfile"
+            component={DoctorProfile}
+            options={{
+              headerShown: false,
+            }}
+          />
+        </>
+      )}
     </Stack.Navigator>
   );
 };

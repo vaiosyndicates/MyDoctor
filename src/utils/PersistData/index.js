@@ -21,13 +21,11 @@ export const getData = async key => {
   }
 };
 
-export const removeValue = async () => {
+export const removeValue = async key => {
   try {
-    await AsyncStorage.removeItem('@storage_Key');
+    await AsyncStorage.removeItem(key);
   } catch (e) {
     // remove error
     console.log(e);
   }
-
-  console.log('Done.');
 };

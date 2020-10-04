@@ -4,7 +4,7 @@ import {colors, fonts} from '../../../utils';
 import {Button} from '../../atom';
 import {Doctor3} from '../../../assets';
 
-const DarkProfile = ({onPress}) => {
+const DarkProfile = ({onPress, title, type, desc, photo}) => {
   return (
     <View style={styles.container}>
       <Button
@@ -14,10 +14,10 @@ const DarkProfile = ({onPress}) => {
         onPress={onPress}
       />
       <View style={styles.profiles}>
-        <Text style={styles.name}>Lila Irwan</Text>
-        <Text style={styles.category}>Dokter Anak</Text>
+        <Text style={styles.name}>{title}</Text>
+        <Text style={styles.category}>{desc}</Text>
       </View>
-      <Image source={Doctor3} style={styles.avatar} />
+      <Image source={photo} style={styles.avatar} />
     </View>
   );
 };

@@ -3,17 +3,15 @@ import {StyleSheet, Text, View, Image} from 'react-native';
 import {fonts, colors} from '../../../utils';
 import {Doctor3} from '../../../assets';
 
-const IsReceiver = () => {
+const IsReceiver = ({text, date, photo}) => {
   return (
     <View style={styles.container}>
-      <Image source={Doctor3} style={styles.avatar} />
+      <Image source={photo} style={styles.avatar} />
       <View>
         <View style={styles.chatContent}>
-          <Text style={styles.text}>
-            Ibu dokter, apakah memakan jeruk tiap hari itu buruk?
-          </Text>
+          <Text style={styles.text}>{text}</Text>
         </View>
-        <Text style={styles.date}>4.20 AM</Text>
+        <Text style={styles.date}>{date}</Text>
       </View>
     </View>
   );

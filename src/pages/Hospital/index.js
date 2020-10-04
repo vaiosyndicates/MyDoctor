@@ -1,10 +1,33 @@
 import React from 'react';
 import {StyleSheet, Text, View, ImageBackground} from 'react-native';
 import {ILHospitalBG, Hospital1, Hospital2, Hospital3} from '../../assets';
-import {fonts, colors} from '../../utils';
+import {fonts, colors, showError, parseArray} from '../../utils';
 import {ListHospital} from '../../component';
+import {useDispatch, useSelector} from 'react-redux';
+import {useFocusEffect} from '@react-navigation/native';
+import {Firebase} from '../../config';
 
 const Hospital = () => {
+  const dispatch = useDispatch();
+  const stateGlobal = useSelector(state => state.hospitals);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      Firebase.database()
+        .ref('hospitals/')
+        .once('value')
+        .then(res => {
+          if (res.val()) {
+            const data = parseArray(res.val());
+            dispatch({type: 'GET_HOSPITALS', value: data});
+          }
+        })
+        .catch(err => {
+          showError(err.message);
+        });
+    }, [dispatch]),
+  );
+
   return (
     <View style={styles.page}>
       <ImageBackground source={ILHospitalBG} style={styles.background}>
@@ -12,24 +35,17 @@ const Hospital = () => {
         <Text style={styles.room}>3 tersedia</Text>
       </ImageBackground>
       <View style={styles.content}>
-        <ListHospital
-          type="Rumah Sakit Umum"
-          name="Cakra Husada"
-          address="Jln Seruni"
-          pic={Hospital1}
-        />
-        <ListHospital
-          type="Rumah Sakit Anak"
-          name="Mangkujiwa"
-          address="Jln Kebon Jeruk"
-          pic={Hospital2}
-        />
-        <ListHospital
-          type="Rumah Sakit Jiwa"
-          name="Gotham City"
-          address="Jln Medan Merdeka"
-          pic={Hospital3}
-        />
+        {stateGlobal.map((current, i) => {
+          return (
+            <ListHospital
+              key={i}
+              type={current.data.type}
+              name={current.data.title}
+              address={current.data.address}
+              pic={current.data.thumbnail}
+            />
+          );
+        })}
       </View>
     </View>
   );

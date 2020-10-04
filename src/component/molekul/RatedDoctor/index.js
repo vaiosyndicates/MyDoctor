@@ -3,20 +3,21 @@ import {StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
 import {IconStar} from '../../../assets';
 import {fonts, colors} from '../../../utils';
 
-const RatedDoctor = ({name, desc, avatar, onPress}) => {
+const RatedDoctor = ({name, desc, avatar, onPress, id, rated}) => {
   return (
-    <TouchableOpacity style={styles.container} onPress={onPress}>
+    <TouchableOpacity
+      style={styles.container}
+      onPress={onPress}
+      key={`rated-${id}`}>
       <Image source={avatar} style={styles.avatar} />
       <View style={styles.profile}>
         <Text style={styles.name}>{name}</Text>
         <Text style={styles.category}>{desc}</Text>
       </View>
       <View style={styles.stars}>
-        <IconStar />
-        <IconStar />
-        <IconStar />
-        <IconStar />
-        <IconStar />
+        {[...Array(rated)].map((el, index) => (
+          <IconStar key={`stars-${index}`} />
+        ))}
       </View>
     </TouchableOpacity>
   );

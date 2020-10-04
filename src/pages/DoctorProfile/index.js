@@ -1,26 +1,37 @@
 import React from 'react';
-import {StyleSheet, View} from 'react-native';
+import {StyleSheet, View, ScrollView} from 'react-native';
 import {colors} from '../../utils/Colors';
 import {Header, Profile, ProfileItem, Button} from '../../component';
+import {ILNullPhoto} from '../../assets';
 
 const DoctorProfile = ({route, navigation}) => {
-  const {name} = route.params;
-  const {desc} = route.params;
+  const dataDoctor = route.params;
   return (
     <View style={styles.page}>
       <Header headerTitle="Profile" onPress={() => navigation.goBack()} />
-      <View style={styles.content}>
-        <Profile name={name} desc={desc} />
-        <ProfileItem label="Alumnus" text="Universitas Indonesia, 2020" />
-        <ProfileItem label="Tempat Praktik" text="Rusah Sakit Umum Bandung" />
-        <ProfileItem label="No. STR" text="080989999" />
-        <View style={styles.wrapperButton}>
-          <Button
-            title="Start Consultation"
-            onPress={() => navigation.navigate('Chat')}
+      <ScrollView>
+        <View style={styles.content}>
+          <Profile
+            name={dataDoctor.data.fullName}
+            desc={dataDoctor.data.category}
+            pic={
+              dataDoctor.data.photo ? {uri: dataDoctor.data.photo} : ILNullPhoto
+            }
           />
+          <ProfileItem label="Alumnus" text={dataDoctor.data.university} />
+          <ProfileItem
+            label="Tempat Praktik"
+            text={dataDoctor.data.hospital_address}
+          />
+          <ProfileItem label="No. STR" text={dataDoctor.data.str_number} />
+          <View style={styles.wrapperButton}>
+            <Button
+              title="Start Consultation"
+              onPress={() => navigation.navigate('Chat', dataDoctor)}
+            />
+          </View>
         </View>
-      </View>
+      </ScrollView>
     </View>
   );
 };

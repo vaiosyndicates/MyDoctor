@@ -1,50 +1,59 @@
 import React, {useState} from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  TouchableOpacity,
-  Alert,
-} from 'react-native';
+import {StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
 import {Header, Button, Link} from '../../component';
 import {ILNullPhoto, IconAdd, IconDelete} from '../../assets';
-import {colors, fonts} from '../../utils';
+import {colors, fonts, storeData, showError} from '../../utils';
 import ImagePicker from 'react-native-image-picker';
 import {showMessage} from 'react-native-flash-message';
+import {Firebase} from '../../config';
+import {useDispatch} from 'react-redux';
 
 const UploadPhoto = ({navigation, route}) => {
   const [hasPhoto, setHasPhoto] = useState(false);
   const [photo, setPhoto] = useState(ILNullPhoto);
-  const {nama} = route.params;
-  const {pekerjaan} = route.params;
+  const [photoData, setPhotoData] = useState('');
+  const {fullname, pekerjaan, uid} = route.params;
+  const dispatch = useDispatch();
 
   const getImage = () => {
     if (hasPhoto === false) {
-      ImagePicker.launchImageLibrary({}, response => {
+      const options = {
+        quality: 0.5,
+        maxWidth: 200,
+        maxHeight: 200,
+      };
+      ImagePicker.launchImageLibrary(options, response => {
         if (response.didCancel) {
-          showMessage({
-            message: 'Oops sepertinya anda tidak memilih fotonya',
-            type: 'default',
-            backgroundColor: colors.alert,
-            color: colors.white,
-          });
+          showError('Oops sepertinya anda tidak memilih fotonya');
         } else if (response.error) {
-          showMessage({
-            message: 'Network error',
-            type: 'default',
-            backgroundColor: colors.alert,
-            color: colors.white,
-          });
+          showError('Bad Network');
         } else {
           const source = {uri: response.uri};
+          setPhotoData(`data:${response.type};base64, ${response.data}`);
           setPhoto(source);
           setHasPhoto(true);
         }
       });
     } else {
+      setPhotoData('');
       setPhoto(ILNullPhoto);
       setHasPhoto(false);
+    }
+  };
+
+  const uploadImage = () => {
+    try {
+      Firebase.database()
+        .ref(`users/${uid}/`)
+        .update({photo: photoData});
+
+      const data = route.params;
+      data.photo = photoData;
+      storeData('user', data);
+      dispatch({type: 'SAVE_USER', value: data});
+      navigation.replace('MainApp');
+    } catch (error) {
+      showError(error);
     }
   };
   return (
@@ -60,14 +69,14 @@ const UploadPhoto = ({navigation, route}) => {
             {hasPhoto && <IconDelete style={styles.addPhoto} />}
             {!hasPhoto && <IconAdd style={styles.addPhoto} />}
           </TouchableOpacity>
-          <Text style={styles.name}>{nama}</Text>
+          <Text style={styles.name}>{fullname}</Text>
           <Text style={styles.work}>{pekerjaan}</Text>
         </View>
         <View>
           <Button
             disable={!hasPhoto}
             title="Upload and Continue"
-            onPress={() => navigation.replace('MainApp')}
+            onPress={() => uploadImage()}
           />
           <View style={{height: 30}} />
           <Link
