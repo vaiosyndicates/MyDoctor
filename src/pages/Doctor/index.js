@@ -7,7 +7,7 @@ import {
   NewsFeed,
 } from '../../component';
 import {Doctor1, Doctor2, Doctor3, ILNullPhoto} from '../../assets';
-import {fonts, colors, showError, parseArray} from '../../utils';
+import {fonts, colors, showError, parseArray, uniqueId, createUUID} from '../../utils';
 import {useFocusEffect} from '@react-navigation/native';
 import {Firebase} from '../../config';
 import {useDispatch, useSelector} from 'react-redux';
@@ -125,10 +125,11 @@ const Doctor = ({navigation}) => {
           {stateGlobal.map((cur, i) => {
             return (
               <NewsFeed
-                id={cur.id}
+                id={`${createUUID}-${cur.id}`}
                 title={cur.title}
                 date={cur.date}
                 thumbnail={cur.thumbnail}
+                onPress={() => navigation.navigate('NewsDetail', cur)}
               />
             );
           })}

@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {List} from '../../component';
-import {colors, fonts, getData} from '../../utils';
+import {chatTime, colors, fonts, getData} from '../../utils';
 import {Doctor1, Doctor2, Doctor3, ILNullPhoto} from '../../assets';
 import {Firebase} from '../../config';
 import {useFocusEffect} from '@react-navigation/native';
@@ -17,28 +17,27 @@ const Message = ({navigation}) => {
       const rootDB = Firebase.database().ref();
       const messagesDB = rootDB.child(urlHistory);
 
-      Firebase.database()
-        .ref(urlHistory)
-        .on('value', async snapshot => {
-          if (snapshot.val()) {
-            const oldData = snapshot.val();
-            const newData = [];
+      messagesDB.on('value', async snapshot => {
+        if (snapshot.val()) {
+          const oldData = snapshot.val();
+          const newData = [];
 
-            const promises = await Object.keys(oldData).map(async key => {
-              const urlDoctor = `doctors/${oldData[key].uidPartner}`;
-              const detailDoctor = await rootDB.child(urlDoctor).once('value');
-
-              newData.push({
-                id: key,
-                detailDoctor: detailDoctor.val(),
-                ...oldData[key],
-              });
+          const promises = await Object.keys(oldData).map(async key => {
+            const urlDoctor = `doctors/${oldData[key].uidPartner}`;
+            const detailDoctor = await rootDB.child(urlDoctor).once('value');
+            newData.push({
+              id: key,
+              detailDoctor: detailDoctor.val(),
+              ...oldData[key],
             });
-
-            await Promise.all(promises);
-            setHistory(newData);
-          }
-        });
+          });
+          await Promise.all(promises);
+          newData.sort(function(a, b) {
+            return b.lastChatDate - a.lastChatDate;
+          });
+          setHistory(newData);
+        }
+      });
     }, [userID.uid]),
   );
 
@@ -57,6 +56,12 @@ const Message = ({navigation}) => {
             id: cur.detailDoctor.uid,
             data: cur.detailDoctor,
           };
+          const dates = new Date(cur.lastChatDate);
+          const fulls = dates.toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit',
+          });
+          const fixed = fulls.substr(0, 5);
 
           return (
             <List
@@ -69,6 +74,7 @@ const Message = ({navigation}) => {
               name={cur.detailDoctor.fullName}
               excerpt={cur.lastContentChat}
               onPress={() => navigation.navigate('Chat', dataDoctor)}
+              time={fixed}
             />
           );
         })}

@@ -1,7 +1,7 @@
 import React from 'react';
 import {StyleSheet, Text, View, ImageBackground} from 'react-native';
 import {ILHospitalBG, Hospital1, Hospital2, Hospital3} from '../../assets';
-import {fonts, colors, showError, parseArray} from '../../utils';
+import {fonts, colors, showError, parseArray, createUUID} from '../../utils';
 import {ListHospital} from '../../component';
 import {useDispatch, useSelector} from 'react-redux';
 import {useFocusEffect} from '@react-navigation/native';
@@ -38,7 +38,7 @@ const Hospital = () => {
         {stateGlobal.map((current, i) => {
           return (
             <ListHospital
-              key={i}
+              id={`${createUUID}-${current.id}`}
               type={current.data.type}
               name={current.data.title}
               address={current.data.address}

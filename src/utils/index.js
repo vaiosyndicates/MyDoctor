@@ -5,3 +5,4 @@ export * from './PersistData';
 export * from './ShowMessage';
 export * from './ParseToArray';
 export * from './DateTime';
+export * from './UniqueKey';

@@ -1,5 +1,4 @@
 import {createStore} from 'redux';
-import {getData, storeData} from '../utils';
 
 const initialState = {
   loading: false,
@@ -16,6 +15,7 @@ const initialState = {
   ratedDoctors: [],
   categoryDoctors: [],
   categoryEachDoctors: [],
+  newsDetail: [],
 };
 
 const reducer = (state = initialState, action) => {
@@ -56,6 +56,12 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         news: action.value,
+      };
+
+    case 'GET_NEWS_DETAIL':
+      return {
+        ...state,
+        newsDetail: action.value,
       };
 
     case 'GET_HOSPITALS':

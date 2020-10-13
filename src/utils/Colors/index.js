@@ -26,7 +26,7 @@ export const colors = {
     third: mainColor.grey3,
     inactive: mainColor.dark2,
     active: mainColor.green1,
-    input: mainColor.grey4,
+    input: mainColor.dark1,
   },
   button: {
     primary: {

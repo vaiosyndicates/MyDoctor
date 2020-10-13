@@ -3,9 +3,9 @@ import {StyleSheet, Text, View, Image} from 'react-native';
 import {fonts, colors} from '../../../utils';
 import {Doctor3} from '../../../assets';
 
-const IsReceiver = ({text, date, photo}) => {
+const IsReceiver = ({text, date, photo, id}) => {
   return (
-    <View style={styles.container}>
+    <View style={styles.container} key={id}>
       <Image source={photo} style={styles.avatar} />
       <View>
         <View style={styles.chatContent}>

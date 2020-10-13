@@ -9,7 +9,7 @@ import {
 } from '../../../assets';
 import {colors, fonts} from '../../../utils';
 
-const List = ({pic, name, excerpt, type, onPress, icon}) => {
+const List = ({pic, name, excerpt, type, onPress, icon, time}) => {
   const Icon = () => {
     if (icon === 'edit-profile') {
       return <IconAccount />;
@@ -33,6 +33,7 @@ const List = ({pic, name, excerpt, type, onPress, icon}) => {
         <Text style={styles.excerpt}>{excerpt}</Text>
       </View>
       {type === 'hasNext' && <IconChevronRight />}
+      {time && <Text style={styles.time}>{time}</Text>}
     </TouchableOpacity>
   );
 };
@@ -59,6 +60,11 @@ const styles = StyleSheet.create({
     fontFamily: fonts.primary[600],
     color: colors.text.primary,
     marginTop: 4,
+  },
+  time: {
+    fontSize: 12,
+    fontFamily: fonts.primary[400],
+    color: colors.text.primary,
   },
   content: icon => ({
     flex: 1,

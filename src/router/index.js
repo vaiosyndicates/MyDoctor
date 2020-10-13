@@ -15,6 +15,7 @@ import {
   UserProfile,
   EditProfile,
   DoctorProfile,
+  NewsDetail,
 } from '../pages';
 import {BottomNavigator} from '../component';
 import {useSelector} from 'react-redux';
@@ -25,16 +26,15 @@ const Tab = createBottomTabNavigator();
 const MainApp = () => {
   return (
     <Tab.Navigator tabBar={props => <BottomNavigator {...props} />}>
-      <Tab.Screen name="Doctor" component={Doctors} />
-      <Tab.Screen name="Messages" component={Messages} />
-      <Tab.Screen name="Hospital" component={Hospitals} />
+      <Tab.Screen name="DOCTOR" component={Doctors} />
+      <Tab.Screen name="MESSAGES" component={Messages} />
+      <Tab.Screen name="HOSPITAL" component={Hospitals} />
     </Tab.Navigator>
   );
 };
 
 const Router = () => {
   const stateGlobal = useSelector(state => state.isLogin);
-  console.log(stateGlobal);
   return (
     <Stack.Navigator initialRouteName="Splash">
       <Stack.Screen
@@ -87,6 +87,13 @@ const Router = () => {
           <Stack.Screen
             name="ChooseDoctor"
             component={ChooseDoctor}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="NewsDetail"
+            component={NewsDetail}
             options={{
               headerShown: false,
             }}

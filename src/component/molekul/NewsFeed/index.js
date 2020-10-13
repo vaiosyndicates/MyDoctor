@@ -1,17 +1,17 @@
 import React from 'react';
-import {StyleSheet, Text, View, Image} from 'react-native';
+import {StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
 import {News1} from '../../../assets';
 import {fonts, colors} from '../../../utils';
 
-const NewsFeed = ({title, date, thumbnail, id}) => {
+const NewsFeed = ({title, date, thumbnail, id, onPress}) => {
   return (
-    <View style={styles.container} key={`news-${id}`}>
+    <TouchableOpacity style={styles.container} onPress={onPress} key={id}>
       <View style={styles.content}>
         <Text style={styles.newsTitle}>{title}</Text>
         <Text style={styles.timestamp}>{date}</Text>
       </View>
       <Image source={{uri: thumbnail}} style={styles.thumbnail} />
-    </View>
+    </TouchableOpacity>
   );
 };
 

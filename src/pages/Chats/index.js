@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {StyleSheet, Text, View, ScrollView} from 'react-native';
 import {Header, Chatitem, InputChat} from '../../component';
 import {
@@ -8,6 +8,8 @@ import {
   showError,
   chatTime,
   chatDate,
+  uniqueId,
+  createUUID,
 } from '../../utils';
 import {ILNullPhoto} from '../../assets';
 import {Firebase} from '../../config';
@@ -17,11 +19,12 @@ const Chat = ({navigation, route}) => {
   const [chatContent, setChatContent] = useState('');
   const [userID, setUserID] = useState({});
   const [chats, setChats] = useState([]);
+  const scrollViewRef = useRef();
+  const [mounted, setMounted] = useState(true);
 
   useEffect(() => {
-    getProfileLocal();
-
-    const displayChat = () => {
+    if (mounted) {
+      getProfileLocal();
       const chatIds = `${userID.uid}_${dataDoctor.data.uid}`;
       const urlChatting = `chatting/${chatIds}/allChat`;
 
@@ -42,19 +45,20 @@ const Chat = ({navigation, route}) => {
                   data: dataChat[key],
                 });
               });
-
               AllDataChat.push({
                 date: item,
                 data: newDataChat,
               });
             });
             setChats(AllDataChat);
+            setMounted(false);
           }
         });
+    }
+    return () => {
+      setMounted(false);
     };
-    displayChat();
-    return () => displayChat();
-  }, [dataDoctor.data.uid, userID.uid]);
+  }, [dataDoctor.data.uid, mounted, userID.uid]);
 
   const getProfileLocal = () => {
     getData('user').then(res => {
@@ -63,6 +67,7 @@ const Chat = ({navigation, route}) => {
   };
 
   const sendChat = () => {
+    setMounted(true);
     const today = new Date();
     const chatIds = `${userID.uid}_${dataDoctor.data.uid}`;
 
@@ -101,6 +106,8 @@ const Chat = ({navigation, route}) => {
         Firebase.database()
           .ref(urlMessagesDoctor)
           .set(dataHistoryChatDoctor);
+
+        setMounted(false);
       })
       .catch(err => {
         showError(err.message);
@@ -119,7 +126,12 @@ const Chat = ({navigation, route}) => {
         }
       />
       <View style={styles.content}>
-        <ScrollView showsVerticalScrollIndicator={false}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          ref={scrollViewRef}
+          onContentSizeChange={() =>
+            scrollViewRef.current.scrollToEnd({animated: true})
+          }>
           {chats.map(cur => {
             return (
               <View key={cur.date}>
@@ -129,7 +141,7 @@ const Chat = ({navigation, route}) => {
                     current.data.sendBy === userID.uid ? true : false;
                   return (
                     <Chatitem
-                      key={current.data.id}
+                      id={`${createUUID}-${cur.id}`}
                       isSender={
                         current.data.sendBy === userID.uid ? true : false
                       }
